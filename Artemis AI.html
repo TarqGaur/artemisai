@@ -1,227 +1,80 @@
 <!DOCTYPE html>
-<!-- saved from url=(0049)https://thebatman2007.github.io/Artemis-Designer/ -->
 <html lang="en">
-
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artemis AI</title>
+    <title>Voice Assistant - Fixed</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Satisfy&display=swap');
-
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
-            color: #fff;
-            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 100vh;
+        }
+
+        #scene-container {
             position: relative;
+            width: 100%;
+            height: 100vh;
         }
 
-        .container {
-            text-align: center;
-            z-index: 10;
-            padding: 2rem;
-            max-width: 100%;
-        }
-
-        .artemis-title {
-            margin-bottom: 1rem;
-            font-size: 3rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            background: linear-gradient(to right, #f9a8d4 0%, #c4b5fd 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 1s ease-out forwards 0.2s;
-        }
-
-        .artemis-title span {
-            font-family: 'Satisfy', cursive;
-            font-weight: 400;
-        }
-
-        .prompt {
-            font-size: 1.5rem;
-            margin-top: 2rem;
-            color: rgba(255, 255, 255, 0.9);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 1s ease-out forwards 0.5s;
-            transition: opacity 0.5s ease-out;
-        }
-
-        .prompt span {
-            font-family: 'Satisfy', cursive;
-            color: #f9a8d4;
-            font-size: 1.7rem;
-        }
-
-        .canvas-container {
+        #ui-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none;
         }
 
-        .status-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            opacity: 0;
-            animation: pulse 2s infinite;
-            z-index: 10;
-        }
-
-        .design-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.8rem;
-            font-weight: 500;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(249, 168, 212, 0.7);
-            opacity: 0;
-            z-index: 20;
+        #prompt-text {
+            color: white;
+            font-size: 2rem;
             text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            opacity: 1;
             transition: opacity 1s ease;
+        }
+
+        #status {
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        #design-message {
+            color: #ff69b4;
+            font-size: 1.8rem;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             display: none;
-        }
-
-        .pastel-glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.15;
-            z-index: 0;
-        }
-
-        .glow-1 {
-            background: radial-gradient(circle, #f9a8d4 0%, transparent 70%);
-            top: 10%;
-            left: 20%;
-            animation: floatAnimation 8s infinite alternate ease-in-out;
-        }
-
-        .glow-2 {
-            background: radial-gradient(circle, #c4b5fd 0%, transparent 70%);
-            bottom: 10%;
-            right: 20%;
-            animation: floatAnimation 12s infinite alternate-reverse ease-in-out;
-        }
-
-        .glow-3 {
-            background: radial-gradient(circle, #93c5fd 0%, transparent 70%);
-            top: 50%;
-            right: 30%;
-            animation: floatAnimation 10s infinite alternate ease-in-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 0.4;
-            }
-
-            50% {
-                opacity: 0.8;
-            }
-
-            100% {
-                opacity: 0.4;
-            }
-        }
-
-        @keyframes floatAnimation {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(30px, 20px);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .artemis-title {
-                font-size: 2.5rem;
-            }
-
-            .prompt {
-                font-size: 1.2rem;
-                padding: 0 1rem;
-            }
-
-            .prompt span {
-                font-size: 1.4rem;
-            }
-
-            .design-message {
-                font-size: 1.4rem;
-                padding: 0 1rem;
-            }
-
-            .pastel-glow {
-                width: 200px;
-                height: 200px;
-            }
+            opacity: 0;
+            transition: opacity 1s ease;
         }
     </style>
-    <script src="chrome-extension://dffaiikpbncahnghlfnkhagffaemhgfo/multi-find-element.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 </head>
-
 <body>
-    <div class="pastel-glow glow-1"></div>
-    <div class="pastel-glow glow-2"></div>
-    <div class="pastel-glow glow-3"></div>
-
-    <div class="canvas-container" id="scene-container"><canvas width="1600" height="739"
-            style="display: block; width: 1600px; height: 739px;"></canvas></div>
-
-    <div class="container">
-        <h1 class="artemis-title"><span>Artemis</span> AI</h1>
-        <p class="prompt" id="prompt-text">Listening... Say "<span>How can I help you?</span>"</p>
+    <div id="scene-container"></div>
+    <div id="ui-overlay">
+        <div id="prompt-text">Say: "Artemis"</div>
+        <div id="status"></div>
+        <!-- <div id="design-message">Designing your smart menstrual cup...</div> -->
     </div>
 
-    <div class="design-message" id="design-message">Designing the smart menstrual cup with smart case</div>
-
-    <div class="status-indicator" id="status">Voice recognition ready</div>
-
-    <script src="./Artemis AI_files/three.min.js.download"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         // Three.js Scene Setup
         const container = document.getElementById('scene-container');
@@ -270,14 +123,13 @@
 
         // Particles
         const particlesGeometry = new THREE.BufferGeometry();
-        const particleCount = 1500; // Increased particles for better effect
+        const particleCount = 1500;
 
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
         const sizes = new Float32Array(particleCount);
 
         for (let i = 0; i < particleCount * 3; i += 3) {
-            // Create particles in a spherical distribution
             const radius = 7 + Math.random() * 8;
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
@@ -286,13 +138,11 @@
             positions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
             positions[i + 2] = radius * Math.cos(phi);
 
-            // Color gradient from blue to pink
             const ratio = Math.random();
-            colors[i] = ratio * 0.98 + 0.02;         // R (pink)
-            colors[i + 1] = ratio * 0.7 + 0.3;       // G (mix)
-            colors[i + 2] = 1 - ratio * 0.5;         // B (blue)
+            colors[i] = ratio * 0.98 + 0.02;
+            colors[i + 1] = ratio * 0.7 + 0.3;
+            colors[i + 2] = 1 - ratio * 0.5;
 
-            // Various particle sizes
             sizes[i / 3] = Math.random() * 0.1 + 0.05;
         }
 
@@ -325,13 +175,12 @@
             specialPositions[i + 1] = (Math.random() - 0.5) * 50;
             specialPositions[i + 2] = (Math.random() - 0.5) * 50;
 
-            // Pinks and purples for special particles
             const pinkRatio = Math.random() * 0.3 + 0.7;
-            specialColors[i] = pinkRatio;      // Strong pink
+            specialColors[i] = pinkRatio;
             specialColors[i + 1] = 0.3 + Math.random() * 0.3;
             specialColors[i + 2] = 0.7 + Math.random() * 0.3;
 
-            specialSizes[i / 3] = Math.random() * 0.3 + 0.1; // Larger special particles
+            specialSizes[i / 3] = Math.random() * 0.3 + 0.1;
         }
 
         specialParticlesGeometry.setAttribute('position', new THREE.BufferAttribute(specialPositions, 3));
@@ -351,9 +200,8 @@
         scene.add(specialParticleSystem);
 
         // Animation state
-        let animationState = 'idle'; // 'idle', 'active', 'transition'
+        let animationState = 'idle';
         let portalScale = 0;
-        let pulseDirection = 1;
         let particleSpeed = 1;
         let specialParticleOpacity = 0;
         let particleFlowDirection = 1;
@@ -365,51 +213,38 @@
 
             const time = Date.now() * 0.001;
 
-            // Rotate the main sphere slowly
             sphere.rotation.y = time * 0.1;
             glowSphere.rotation.y = time * -0.05;
 
-            // Subtle pulse effect for the sphere
             const pulseFactor = 1 + Math.sin(time) * 0.03;
             sphere.scale.set(pulseFactor, pulseFactor, pulseFactor);
 
-            // Animate particles
             const positions = particleSystem.geometry.attributes.position.array;
 
             for (let i = 0; i < positions.length; i += 3) {
-                // Get current position
                 const x = positions[i];
                 const y = positions[i + 1];
                 const z = positions[i + 2];
-
-                // Calculate distance from center
                 const distance = Math.sqrt(x * x + y * y + z * z);
 
                 if (animationState === 'idle') {
-                    // Gentle swirling in idle state
                     const angle = 0.002 * particleSpeed;
                     const newX = x * Math.cos(angle) - z * Math.sin(angle);
                     const newZ = x * Math.sin(angle) + z * Math.cos(angle);
 
                     positions[i] = newX;
                     positions[i + 2] = newZ;
-
-                    // Slight vertical oscillation
                     positions[i + 1] = y + Math.sin(time * 2 + distance) * 0.01;
                 }
                 else if (animationState === 'active') {
-                    // Faster swirling when active
                     const angle = 0.01 * particleSpeed;
                     const newX = x * Math.cos(angle) - z * Math.sin(angle);
                     const newZ = x * Math.sin(angle) + z * Math.cos(angle);
 
                     positions[i] = newX;
                     positions[i + 2] = newZ;
-
-                    // More pronounced oscillation
                     positions[i + 1] = y + Math.sin(time * 5 + distance) * 0.05;
 
-                    // Particles pulse brightness
                     const colors = particleSystem.geometry.attributes.color.array;
                     const colorIndex = (i / 3) * 3;
                     const brightness = 0.7 + Math.sin(time * 5) * 0.3;
@@ -419,7 +254,6 @@
                     particleSystem.geometry.attributes.color.needsUpdate = true;
                 }
                 else if (animationState === 'transition') {
-                    // Create a flowing pattern effect
                     const radius = 10 + Math.sin(time * 3 + i * 0.01) * 1.5;
                     const theta = Math.atan2(z, x) + 0.02 * particleFlowDirection;
                     const phi = Math.atan2(Math.sqrt(x * x + z * z), y) + Math.sin(time * 2 + i * 0.005) * 0.05;
@@ -428,16 +262,13 @@
                     positions[i + 1] = radius * Math.cos(phi) + Math.sin(time * 3 + i * 0.01) * 0.5;
                     positions[i + 2] = radius * Math.sin(phi) * Math.sin(theta);
 
-                    // Enhanced color effects
                     const colors = particleSystem.geometry.attributes.color.array;
                     const colorIndex = (i / 3) * 3;
-                    const brightness = 1.2 + Math.sin(time * 8 + i * 0.01) * 0.3;
-                    const pinkRatio = 0.6 + Math.sin(time * 5 + i * 0.02) * 0.4; // More pink pulsing
+                    const pinkRatio = 0.6 + Math.sin(time * 5 + i * 0.02) * 0.4;
                     colors[colorIndex] = pinkRatio;
                     colors[colorIndex + 1] = 0.5 + Math.sin(time * 6 + i * 0.02) * 0.2;
                     colors[colorIndex + 2] = 0.9 - Math.sin(time * 7 + i * 0.01) * 0.3;
 
-                    // Make some particles glow brighter periodically
                     if (Math.sin(time * 10 + i * 0.1) > 0.8) {
                         colors[colorIndex] = 1;
                         colors[colorIndex + 1] = 0.9;
@@ -446,12 +277,10 @@
 
                     particleSystem.geometry.attributes.color.needsUpdate = true;
 
-                    // Size pulsing
                     const sizes = particleSystem.geometry.attributes.size.array;
                     sizes[i / 3] = (0.1 + Math.sin(time * 5 + i * 0.01) * 0.05) * (1 + portalScale * 0.5);
                     particleSystem.geometry.attributes.size.needsUpdate = true;
 
-                    // Expand overall effect
                     portalScale += 0.001;
                     if (portalScale > 2) {
                         window.location.href = "https://thebatman2007.github.io/Smart-Menstrual-Cup/main.html";
@@ -459,33 +288,25 @@
                 }
             }
 
-            // Handle special particles animation during transition
             if (animationState === 'transition') {
-                // Fade in special particles
                 if (specialParticleOpacity < 1) {
                     specialParticleOpacity += 0.02;
                     specialParticlesMaterial.opacity = specialParticleOpacity;
                 }
 
-                // Animate special particles
                 const specialPositions = specialParticleSystem.geometry.attributes.position.array;
                 for (let i = 0; i < specialPositions.length; i += 3) {
-                    // Flowing motion toward center, then outward
                     const x = specialPositions[i];
                     const y = specialPositions[i + 1];
                     const z = specialPositions[i + 2];
 
                     const dist = Math.sqrt(x * x + y * y + z * z);
-                    let factor = 1;
 
-                    // Create flowing stream effects
                     if (dist > 25) {
-                        // Reset particles that go too far out
                         specialPositions[i] = (Math.random() - 0.5) * 10;
                         specialPositions[i + 1] = (Math.random() - 0.5) * 10;
                         specialPositions[i + 2] = (Math.random() - 0.5) * 10;
                     } else {
-                        // Swirl and flow
                         const angle = 0.02;
                         const newX = x * Math.cos(angle) - z * Math.sin(angle);
                         const newZ = x * Math.sin(angle) + z * Math.cos(angle);
@@ -494,7 +315,6 @@
                         specialPositions[i + 1] = y + Math.cos(time * 2 + i * 0.01) * 0.3;
                         specialPositions[i + 2] = newZ + Math.sin(time * 2.5 + i * 0.01) * 0.3;
 
-                        // Add velocity in certain direction
                         if (i % 9 === 0) {
                             specialPositions[i] += Math.sin(time * 5) * 0.2;
                         } else if (i % 9 === 3) {
@@ -504,7 +324,6 @@
                         }
                     }
 
-                    // Dynamic size and color changes
                     const specialSizes = specialParticleSystem.geometry.attributes.size.array;
                     specialSizes[i / 3] = 0.2 + Math.sin(time * 4 + i * 0.05) * 0.15;
 
@@ -523,18 +342,14 @@
 
             particleSystem.geometry.attributes.position.needsUpdate = true;
 
-            // Adjust material properties based on state
             if (animationState === 'active') {
-                // Brighter emissive for active state
                 sphereMaterial.emissive.setHex(0x60a5fa);
                 glowMaterial.emissive.setHex(0xfda4af);
 
-                // Pulse size
                 const pulseMagnitude = Math.sin(time * 5) * 0.1;
                 glowSphere.scale.set(1.3 + pulseMagnitude, 1.3 + pulseMagnitude, 1.3 + pulseMagnitude);
             }
             else if (animationState === 'transition') {
-                // Portal effect coloring
                 const portalBlue = new THREE.Color(0x3b82f6);
                 const portalPink = new THREE.Color(0xec4899);
                 const mixColor = new THREE.Color().lerpColors(portalBlue, portalPink, Math.sin(time * 10) * 0.5 + 0.5);
@@ -544,13 +359,11 @@
                 glowMaterial.emissive = mixColor;
                 glowMaterial.emissiveIntensity = 3;
 
-                // Pulasating sphere effect
                 const pulseStrength = 1 + Math.sin(time * 8) * 0.2;
                 sphere.scale.set(pulseStrength + portalScale * 0.5, pulseStrength + portalScale * 0.5, pulseStrength + portalScale * 0.5);
                 glowSphere.scale.set(1.3 * pulseStrength + portalScale, 1.3 * pulseStrength + portalScale, 1.3 * pulseStrength + portalScale);
             }
             else {
-                // Default idle state
                 const pulseMagnitude = Math.sin(time * 2) * 0.05;
                 glowSphere.scale.set(1.2 + pulseMagnitude, 1.2 + pulseMagnitude, 1.2 + pulseMagnitude);
             }
@@ -558,7 +371,6 @@
             renderer.render(scene, camera);
         }
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -571,20 +383,16 @@
         const designMessage = document.getElementById('design-message');
         let recognition = null;
         let recognitionActive = false;
-        // Add this function to your script
+
         function speakText(text) {
             if ('speechSynthesis' in window) {
-                // Cancel any ongoing speech
                 window.speechSynthesis.cancel();
 
                 const utterance = new SpeechSynthesisUtterance(text);
-
-                // Configure voice settings
-                utterance.rate = 0.9;  // Slightly slower than normal
-                utterance.pitch = 1.1; // Slightly higher pitch for feminine voice
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
                 utterance.volume = 0.8;
 
-                // Try to use a female voice if available
                 const voices = window.speechSynthesis.getVoices();
                 const femaleVoice = voices.find(voice =>
                     voice.name.toLowerCase().includes('female') ||
@@ -597,17 +405,16 @@
                     utterance.voice = femaleVoice;
                 }
 
-                // Speak the text
                 window.speechSynthesis.speak(utterance);
-
                 return utterance;
             } else {
                 console.log('Text-to-speech not supported');
                 return null;
             }
         }
+
         async function getAIResponse(question) {
-            const OPENROUTER_API_KEY = "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";
+            const OPENROUTER_API_KEY = "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";
 
             const messages = [
                 {
@@ -616,7 +423,6 @@
                 }
             ];
 
-            // Optional: check if chatHistory exists before using
             if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory)) {
                 chatHistory.slice(-4).forEach(msg => messages.push(msg));
             }
@@ -651,18 +457,23 @@
             const data = await response.json();
             return data.choices[0].message.content;
         }
-        // Instead of the global await, do this:
-        async function initializeAI(qna) {
+
+        // FIXED: Only call AI for general questions, not the specific command
+        async function handleGeneralQuestion(question) {
             try {
-                const response = await getAIResponse(qna);
+                const response = await getAIResponse(question);
                 console.log(response);
                 speakText(response);
+                
+                // Add to chat history
+                if (!chatHistory) chatHistory = [];
+                chatHistory.push({ role: "user", content: question });
+                chatHistory.push({ role: "assistant", content: response });
             } catch (error) {
-                console.error('AI initialization failed:', error);
+                console.error('AI response failed:', error);
+                speakText("Sorry, I couldn't process that question right now.");
             }
         }
-
-        // Call it when needed
 
         function setupSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -688,34 +499,33 @@
             recognition.onresult = function (event) {
                 const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 statusElement.textContent = `Heard: "${transcript}"`;
-                initializeAI(transcript);
 
-
+                // FIXED: Check for specific command first
                 if (transcript.includes('artemis, create a smart menstrual cup') ||
                     transcript.includes('artemis create a smart menstrual cup')) {
-
-                    // First increase animation activity
+                    
+                    // Handle the specific command - trigger portal animation
                     animationState = 'active';
                     particleSpeed = 3;
 
-                    // Update status and hide prompt
                     statusElement.textContent = 'Command recognized - preparing design';
-                    promptText.style.opacity = '0'; // Hide the prompt
+                    promptText.style.opacity = '0';
 
-                    // After a delay, transition to portal effect with design message
                     setTimeout(() => {
                         animationState = 'transition';
-                        designMessage.style.display = 'block'; // Show design message
+                        designMessage.style.display = 'block';
                         setTimeout(() => {
-                            designMessage.style.opacity = '1'; // Fade in design message
+                            designMessage.style.opacity = '1';
                         }, 100);
 
-                        // Stop recognition during transition
                         if (recognitionActive) {
                             recognition.stop();
                             recognitionActive = false;
                         }
                     }, 1500);
+                } else {
+                    // FIXED: Only call AI for other questions, not the main command
+                    handleGeneralQuestion(transcript);
                 }
             };
 
@@ -723,7 +533,6 @@
                 statusElement.textContent = 'Error: ' + event.error;
                 statusElement.style.opacity = '1';
 
-                // Don't try to restart if already active to avoid the error
                 if (event.error !== 'aborted' && !recognitionActive) {
                     startRecognition();
                 }
@@ -732,16 +541,13 @@
             recognition.onend = function () {
                 recognitionActive = false;
 
-                // Only restart if we're not in transition mode
                 if (animationState !== 'transition') {
-                    // Small delay before restarting to avoid conflicts
                     setTimeout(() => {
                         startRecognition();
                     }, 300);
                 }
             };
 
-            // Start recognition initially
             startRecognition();
         }
 
@@ -769,27 +575,9 @@
         // Initialize
         animate();
 
-
-
-        // Start voice recognition after a short delay
         window.addEventListener('load', () => {
             setTimeout(setupSpeechRecognition, 1000);
         });
     </script>
-
-    <div class="multi-find-menu-container"
-        style="width: 400px; inset: 0px 18px auto auto; position: fixed; height: 0px; display: flex; align-items: start; justify-content: space-between; z-index: 999998; max-height: 100vh; overflow: hidden; color-scheme: auto;">
-        <iframe title="advanced search" width="100%" height="100%" frameborder="none" name="multi-find-menu"
-            style="position: static; z-index: 1000000; border: 0px;"
-            src="./Artemis AI_files/saved_resource.html"></iframe>
-    </div>
-    <div>
-        <div
-            style="position: fixed; right: 0px; top: 0px; width: 18px; height: 100%; z-index: 999999; pointer-events: none; background-image: url(&quot;data:,&quot;); background-size: 100% 100%; background-repeat: no-repeat;">
-        </div><button class="move-button"
-            style="display: none; position: fixed; right: 18px; left: auto; top: 50%; z-index: 999999;">◀</button>
-    </div>
-    <div id="loom-companion-mv3" ext-id="liecbddmkiiihnedobmlmillhodjkdmb"></div>
 </body>
-
 </html>
